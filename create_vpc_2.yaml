@@ -95,3 +95,73 @@
         routes:
           - dest: 0.0.0.0/0
             nat_gateway_id: "{{ new_nat_gateway.nat_gateway_id }}"
+    - name: Create public ACL
+      ec2_vpc_nacl:
+        vpc_id: "{{ vpc['vpc']['id'] }}"
+        name: m5-img-gallery-public-acl
+        subnets:
+          - "{{ public_subnet1.subnet.id }}"
+          - "{{ public_subnet2.subnet.id }}"
+          - "{{ public_subnet3.subnet.id }}"
+        ingress:
+          - [100, 'tcp', 'allow', '0.0.0.0/0', null, null, 22, 22]
+          - [200, 'tcp', 'allow', '73.93.235.103/32', null, null, 5000, 5000]
+          - [300, 'tcp', 'allow', '0.0.0.0/0', 'null', 'null', 80, 80]
+          - [400, 'tcp', 'allow', '0.0.0.0/0', 'null', 'null', 443, 443]
+          - [900, 'tcp', 'allow', '0.0.0.0/0', 'null', 'null', 1024, 65535]
+        egress:
+          - [100, 'tcp', 'allow', '0.0.0.0/0', null, null, 80, 80]
+          - [200, 'tcp', 'allow', '0.0.0.0/0', null, null, 443, 443] 
+          - [900, 'tcp', 'allow', '0.0.0.0/0', null, null, 1024, 65535]
+        state: present
+    - name: Create private ACL
+      ec2_vpc_nacl:
+        vpc_id: "{{ vpc['vpc']['id'] }}"
+        name: m5-img-gallery-private-acl
+        subnets:
+          - "{{ private_subnet1.subnet.id }}"
+          - "{{ private_subnet2.subnet.id }}"
+        ingress:
+          - [100, 'tcp', 'allow', '10.10.0.0/16', null, null, 5432, 5432]
+        egress:
+          - [900, 'tcp', 'allow', '10.10.0.0/16', null, null, 1024, 65535]
+        state: present
+    - name: Create ig-developer security group
+      ec2_group:
+        name: m5-ig-development-2
+        description: security group for M5 Project
+        vpc_id: "{{ vpc['vpc']['id'] }}"
+        state: present
+      register: ig_devel_sg
+    - name: Create ig-postgres security group
+      ec2_group:
+        name: m5-ig-postgres
+        description: postgres security group
+        vpc_id: "{{ vpc['vpc']['id'] }}"
+        rules:
+          - proto: tcp
+            ports:
+              - 5432
+            group_name: "{{ ig_devel_sg.group_id }}" 
+        state: present
+      register: ig_postgres
+    - name: Create ig-developer security group 2
+      ec2_group:
+        name: m5-ig-development-2
+        description: security group for M5 Project
+        vpc_id: "{{ vpc['vpc']['id'] }}"
+        rules:
+          - proto: tcp
+            ports:
+              - 22
+            cidr_ip: 0.0.0.0/0
+            rule_desc: allow all from port 22.
+          - proto: tcp
+            ports:
+              - 80
+              - 443
+            cidr_ip:
+              - 73.93.235.103/32
+              - 24.196.25.139/32
+              - 24.239.105.213/32
+        state: present
