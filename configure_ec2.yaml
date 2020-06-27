@@ -1,0 +1,8 @@
+---
+- hosts: tag_Module_5
+  user: ec2-user
+  tasks: 
+    - name: Install emacs
+      package: 
+        name: emacs-nox
+        state: present
