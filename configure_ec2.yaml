@@ -1,8 +1,23 @@
 ---
-- hosts: tag_Module_5
+- hosts: tag_Name_M5_developer_instance
   user: ec2-user
+  become: true
+  vars:
   tasks: 
-    - name: Install emacs
+    - name: Install postgresql
       package: 
-        name: emacs-nox
+        name: postgresql
         state: present
+    - name: Install postgresql devel 
+      package:
+        name: postgresql-devel
+        state: present
+    - name: install pip3
+      yum: 
+        name: pip3
+        state: present 
+    - pip:
+        name: psycopg2
+    - name: Create database Image Gallery
+      postgresql_db:
+        name: image_gallery

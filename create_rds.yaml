@@ -1,0 +1,26 @@
+---
+- hosts: localhost
+  gather_facts: no
+  module_defaults:
+    group/aws:
+      region: "us-west-1"
+  tasks:
+    - rds_subnet_group:
+        name: m5-ig-private-dbroup
+        subnets:
+          - "{{ private_subnet1.subnet.id }}"
+          - "{{ private_subnet2.subnet.id }}"
+        state: present       
+        description: Subnet for m5 project
+      register: rds_subnet
+    - rds:
+        command: create
+        instance_name: m5-image-gallery
+        db_engine: postgres
+        size: '20'
+        instance_type: db.t2.micro
+        username: postgres
+        password: postgres
+        subnet: "{{ rds_subnet.subnet_group.name }}"
+        vpc_security_groups: "{{ ig_postgres.group_id }}"
+
