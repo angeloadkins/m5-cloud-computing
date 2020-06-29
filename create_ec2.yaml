@@ -23,4 +23,5 @@
         exact_count: 1
         count_tag:
           Name: M5_developer_instance
+        user_data: "{{ lookup('file', 'quick_startup.sh') }}"
       register: ec2

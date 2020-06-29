@@ -1,0 +1,34 @@
+---
+- hosts: localhost
+  gather_facts: no
+  vars:
+    ami_id: "ami-04e59c05167ea7bd5"
+  module_defaults:
+    group/aws:
+      region: "us-west-1"
+  tasks:
+    - elb_network_lb:
+        name: m5-image-gallery-nlb
+        subnet_mappings:
+          - SubnetId: "{{ public_subnet1.subnet.id }}"
+            AllocationId: "eipalloc-0a581f635494b1b5d"
+          - SubnetId: "{{ public_subnet2.subnet.id  }}" 
+            AllocationId: "eipalloc-0d794f3bfcb36b243"
+        scheme: internet-facing
+        listeners: 
+          - Protocol: TCP
+            Port: 80
+            DefaultActions:
+              - Type: forward
+                TargetGroupName: "{{ tg.target_group_name }}"
+          - Protocol: TLS
+            Port: 443
+            Certificates:  
+              - CertificateArn: "arn:aws:acm:us-west-1:580623203844:certificate/f03d9df6-1eb6-4247-af18-3739324f0ff1"            
+            DefaultActions:
+              - Type: forward
+                TargetGroupName: "{{ tg.target_group_name }}"
+        state: present
+      register: nlb
+    - name: debug load balancer
+      debug: var=nlb

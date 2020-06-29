@@ -10,17 +10,24 @@
         subnets:
           - "{{ private_subnet1.subnet.id }}"
           - "{{ private_subnet2.subnet.id }}"
-        state: present       
+        state: present
         description: Subnet for m5 project
       register: rds_subnet
-    - rds:
-        command: create
-        instance_name: m5-image-gallery-1
-        db_engine: postgres
-        db_name: image_gallery
-        size: '20'
-        instance_type: db.t2.micro
-        username: postgres
-        password: postgres
+    - local_action:
+        module: rds
+        command: restore
+        snapshot: image-gallery-ss-1
+        instance_name: m5-image-gallery
         subnet: "{{ rds_subnet.subnet_group.name }}"
+   #     wait: yes
+   #     wait_timeout: 600
+        tags:
+          Name: m5-image-gallery
+      register: rds
+    - local_action:
+        module: rds
+        command: modify
+        instance_name: m5-image-gallery
         vpc_security_groups: "{{ ig_postgres.group_id }}"
+    - name: debug rds
+      debug: var=rds

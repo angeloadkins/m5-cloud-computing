@@ -3,21 +3,14 @@
   user: ec2-user
   become: true
   vars:
+    ansible_python_interpreter: /usr/bin/python
   tasks: 
-    - name: Install postgresql
-      package: 
-        name: postgresql
-        state: present
-    - name: Install postgresql devel 
-      package:
-        name: postgresql-devel
-        state: present
-    - name: install pip3
-      yum: 
-        name: pip3
-        state: present 
-    - pip:
-        name: psycopg2
-    - name: Create database Image Gallery
-      postgresql_db:
-        name: image_gallery
+#    - name: Create Image Gallery User
+#      postgresql_user:
+#        db: m5-image-gallery       
+#        login_host: "{{ m5-image-gallery.cskbuoevouol.us-west-1.rds.amazonaws.com }}"
+#        login_user: postgres
+#        login_password: postgres      
+#        name: image_gallery
+#        password: simple
+#        priv: all

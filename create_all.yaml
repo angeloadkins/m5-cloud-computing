@@ -1,5 +1,9 @@
 ---
+#- import_playbook: create_eip.yaml
 - import_playbook: create_vpc.yaml
-- import_playbook: create_rds.yaml
-- import_playbook: create_ec2.yaml
-- import_playbook: configure_ec2.yaml
+- import_playbook: restore_rds.yaml
+- import_playbook: create_secret.yaml
+- import_playbook: create_target.yaml
+- import_playbook: create_nlb.yaml
+- import_playbook: create_launch_template.yaml
+- import_playbook: create_asg.yaml

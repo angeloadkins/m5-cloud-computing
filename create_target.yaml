@@ -1,0 +1,18 @@
+---
+- hosts: localhost
+  gather_facts: no
+  module_defaults:
+    group/aws:
+      region: "us-west-1"
+  tasks:
+    - elb_target_group:
+        name: m5-image-gallery-tg
+        stickiness_enabled: False
+        stickiness_type: source_ip
+        protocol: tcp
+        port: 80
+        vpc_id: "{{ vpc['vpc']['id'] }}"
+        state: present
+      register: tg
+    - name: get target group data
+      debug: var=tg

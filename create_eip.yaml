@@ -1,0 +1,19 @@
+---
+- hosts: localhost
+  gather_facts: no
+  vars:
+    ami_id: "ami-04e59c05167ea7bd5"
+  module_defaults:
+    group/aws:
+      region: "us-west-1"
+  tasks:
+    - name: allocate a new elastic IP without associating it to anything
+      ec2_eip:
+        state: present
+      register: eip1
+    - name: debug eip1
+      debug: var=eip1
+    - name: allocate another elactic IP
+      ec2_eip:
+        state: present
+      register: eip2

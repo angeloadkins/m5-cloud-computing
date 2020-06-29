@@ -1,0 +1,18 @@
+---
+- hosts: localhost
+  gather_facts: no
+  module_defaults:
+    group/aws:
+      region: "us-west-1"
+  tasks:
+    - ec2_asg:
+        name: m5-asg
+#        availability_zones: [ 'us-west-1a', 'us-west-1b' ]
+        launch_template: 
+          launch_template_name: "m5_launch_template"
+        min_size: 1
+        max_size: 4
+        desired_capacity: 2
+        vpc_zone_identifier: 
+          - "{{ public_subnet1.subnet.id }}"
+          - "{{ public_subnet2.subnet.id }}" 

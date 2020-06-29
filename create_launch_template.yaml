@@ -1,0 +1,28 @@
+---
+- hosts: localhost
+  gather_facts: no
+  vars:
+    ami_id: "ami-04e59c05167ea7bd5"
+  module_defaults:
+    group/aws:
+      region: "us-west-1"
+  tasks:
+    - name: Create an ec2 launch template
+      ec2_launch_template:
+        name: "m5_launch_template"
+        image_id: "ami-04e59c05167ea7bd5"
+        key_name: m1 key
+        instance_type: t2.micro
+        iam_instance_profile: image-gallery-server-role
+        network_interfaces: 
+          - device_index: 0 
+            associate_public_ip_address: yes
+            groups:
+              - "{{ ig_postgres_tag.group_id }}"
+              - "{{ ig_devel_sg.group_id }}"
+        tags:
+          Name: M5 launch instance
+        user_data: "{{ lookup('file', 'user_data.sh') | b64encode }}"
+      register: lt
+    - name: debug launch template
+      debug: var=lt
