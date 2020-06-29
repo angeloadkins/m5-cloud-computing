@@ -19,8 +19,8 @@
         snapshot: image-gallery-ss-1
         instance_name: m5-image-gallery
         subnet: "{{ rds_subnet.subnet_group.name }}"
-   #     wait: yes
-   #     wait_timeout: 600
+        wait: yes
+        wait_timeout: 600
         tags:
           Name: m5-image-gallery
       register: rds

@@ -11,7 +11,7 @@
         name: m5-image-gallery-nlb
         subnet_mappings:
           - SubnetId: "{{ public_subnet1.subnet.id }}"
-            AllocationId: "eipalloc-0a581f635494b1b5d"
+            AllocationId: "eipalloc-0c4d829094633a78b"
           - SubnetId: "{{ public_subnet2.subnet.id  }}" 
             AllocationId: "eipalloc-0d794f3bfcb36b243"
         scheme: internet-facing
